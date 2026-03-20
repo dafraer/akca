@@ -1,8 +1,8 @@
 from akca.db import store
-import click
+from akca.cli import commands
 
 class App():
     def __init__(self, service: store.Store):
-        print("Halo von App")
+        pass
     def run(self):
-        pass    
+        commands.root()

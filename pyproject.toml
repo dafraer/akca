@@ -1,0 +1,15 @@
+[project]
+name = "akca"
+version = "0.0.1"
+description = "Expense tracking CLI"
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.1",
+]
+
+[project.scripts]
+akca = "akca.__main__:main"
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
