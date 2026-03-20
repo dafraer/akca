@@ -3,6 +3,6 @@ import click
 
 class App():
     def __init__(self, service: store.Store):
-        print("Halo aus App")
+        print("Halo von App")
     def run(self):
         pass    

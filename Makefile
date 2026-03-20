@@ -1,5 +1,5 @@
 push:
-	git add . && git commit -m = '$(m)' && git push
+	git add . && git commit -m='$(m)' && git push
 run:
 	python3 -m akca
 venv:
