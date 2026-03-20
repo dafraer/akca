@@ -1,13 +1,7 @@
-from .cli import cli
-from .db import store
-from .domain import service
-
+from .app.app import cli
 
 def main():
-    new_store = store.Store()
-    new_service = service.Service(new_store)
-    new_cli = cli.App(new_service)
-    new_cli.run()
+    cli()   
 
 if __name__=="__main__":
     main()
