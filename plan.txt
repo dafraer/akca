@@ -1,0 +1,58 @@
+akca
+    account
+        new             
+           --name=
+           --currency=
+        rm
+            --id=
+        edit
+            --id=
+            --name=
+            --currency=
+        ls
+    category
+        new
+            --name=
+            --parent=
+        rm
+            --id=
+        edit
+            --id=
+            --name=
+            --parent=
+        
+        tree    shows a category tree with spending by category
+        ls
+    purchase
+        new
+            --name=
+            --amount=
+            --desc=
+            --category=<name>:<name>:<name> (from root to leaf) 
+            --time=
+        rm
+            --id=
+        edit
+            --id= 
+            --name=
+            --amount=
+            --desc=
+            --categories=<name>:<name>:<name> (from root to leaf)
+            --time=
+        ls 
+            --name=
+            --from=
+            --to=
+            --category=<name>:<name>:<name>    (from root to leaf)
+            --sort= time/amount/alphabet
+            --max=
+    stats
+        --day=
+        --month=
+        --year=
+    backup 
+        directory
+
+    
+
+    

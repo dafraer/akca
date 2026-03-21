@@ -1,5 +1,7 @@
 import click 
-from akca.app import commands
+from akca.app.account import account
+from akca.app.category import category 
+from akca.app.purchase import purchase 
 
 @click.group
 @click.pass_context
@@ -9,6 +11,6 @@ def cli(ctx):
     store = Store()
     ctx.obj = Service(store)
 
-cli.add_command(commands.account)
-cli.add_command(commands.category)
-cli.add_command(commands.purchase)
+cli.add_command(account)
+cli.add_command(category)
+cli.add_command(purchase)
