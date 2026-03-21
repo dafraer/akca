@@ -1,5 +1,45 @@
-import click 
+import click
+import datetime
+
+TIME=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+FROM_DATE="01/01/2001"
+TO_DATE=datetime.today().strftime("%d/%m/%Y")
+
 
 @click.group
 def purchase():
-    click.echo("purchase command has been called")
+    pass
+
+@purchase.command
+@click.option("-n", "--name", type=str, required=True)
+@click.option("-a", "--amount", type=int, required=True)
+@click.option("-d", "--desc", type=str)
+@click.option("-c", "--category", type=int)
+@click.option("-t", "--time", type=str, default=TIME)
+def new(name: str, amount: int, desc: str, category: str, time: str):
+    click.echo(f"new purchase created: {name=}, {amount=}, {desc=}, {category=}, {time=}")
+
+@purchase.command
+@click.option("--id", type=int, required=True)
+def rm(id: int):
+    click.echo(f"removed purchase with {id=}")
+
+@purchase.command
+@click.option("--id", type=int, required=True)
+@click.option("-n", "--name", type=str)
+@click.option("-a", "--amount", type=int)
+@click.option("-d", "--description", type=str)
+@click.option("-c", "--category", type=str)
+@click.option("-t", "--time", type=str)
+def edit(id: int, name: str, amount: int, desc: str, categories: str, time: str):
+    click.echo(f"edited purchase with {id=}, {name=}, {amount=}, {desc=}, {categories=}, {time=}")
+
+@purchase.command
+@click.option("-n", "--name", type=str)
+@click.option("-from", "--from_date", type=str, default=FROM_DATE)
+@click.option("-to", "to_date", type=str, default=TO_DATE)
+@click.option("-c", "--category", type=str)
+@click.option("-s", "--sort", type=click.Choice(["time", "amount", "alphabet"]))
+@click.option("-m", "--max", type=int)
+def ls(name: str, from_date: str, to_date: str, category: str, sort: str, max: int):
+    click.echo(f"listing purchases: {name=}, {from_date=}, {to_date=}, {category=}, {sort=}, {max=}")

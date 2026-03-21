@@ -36,8 +36,8 @@ akca
             --id= 
             --name=
             --amount=
-            --desc=
-            --categories=<name>:<name>:<name> (from root to leaf)
+            --description=
+            --category=<name>:<name>:<name> (from root to leaf)
             --time=
         ls 
             --name=
@@ -47,9 +47,8 @@ akca
             --sort= time/amount/alphabet
             --max=
     stats
-        --day=
-        --month=
-        --year=
+        --from_date
+        --to_date 
     backup 
         directory
 
