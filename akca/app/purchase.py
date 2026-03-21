@@ -1,5 +1,5 @@
 import click
-import datetime
+from datetime import datetime
 
 TIME=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 FROM_DATE="01/01/2001"
