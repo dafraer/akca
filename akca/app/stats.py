@@ -7,5 +7,6 @@ TO_DATE=datetime.today().strftime("%d/%m/%Y")
 @click.command
 @click.option("-from","--from_date", type=str, default=FROM_DATE)
 @click.option("-to","--to_date", type=str, default=TO_DATE)
-def stats(from_date: str, to_date: str):
+@click.pass_context
+def stats(ctx, from_date: str, to_date: str):
     click.echo(f"showing stats: {from_date=}, {to_date=}")

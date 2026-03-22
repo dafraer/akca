@@ -16,12 +16,14 @@ def purchase():
 @click.option("-d", "--desc", type=str)
 @click.option("-c", "--category", type=int)
 @click.option("-t", "--time", type=str, default=TIME)
-def new(name: str, amount: int, desc: str, category: str, time: str):
+@click.pass_context
+def new(ctx, name: str, amount: int, desc: str, category: str, time: str):
     click.echo(f"new purchase created: {name=}, {amount=}, {desc=}, {category=}, {time=}")
 
 @purchase.command
 @click.option("--id", type=int, required=True)
-def rm(id: int):
+@click.pass_context
+def rm(ctx, id: int):
     click.echo(f"removed purchase with {id=}")
 
 @purchase.command
@@ -31,7 +33,8 @@ def rm(id: int):
 @click.option("-d", "--description", type=str)
 @click.option("-c", "--category", type=str)
 @click.option("-t", "--time", type=str)
-def edit(id: int, name: str, amount: int, desc: str, categories: str, time: str):
+@click.pass_context
+def edit(ctx, id: int, name: str, amount: int, desc: str, categories: str, time: str):
     click.echo(f"edited purchase with {id=}, {name=}, {amount=}, {desc=}, {categories=}, {time=}")
 
 @purchase.command
@@ -41,5 +44,6 @@ def edit(id: int, name: str, amount: int, desc: str, categories: str, time: str)
 @click.option("-c", "--category", type=str)
 @click.option("-s", "--sort", type=click.Choice(["time", "amount", "alphabet"]))
 @click.option("-m", "--max", type=int)
-def ls(name: str, from_date: str, to_date: str, category: str, sort: str, max: int):
+@click.pass_context
+def ls(ctx, name: str, from_date: str, to_date: str, category: str, sort: str, max: int):
     click.echo(f"listing purchases: {name=}, {from_date=}, {to_date=}, {category=}, {sort=}, {max=}")

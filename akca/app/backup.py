@@ -7,5 +7,6 @@ def backup():
 
 @backup.command
 @click.argument("directory")
-def directory(directory: str):
+@click.pass_context
+def directory(ctx, directory: str):
     click.echo(f"backup to {directory=}")

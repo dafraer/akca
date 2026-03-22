@@ -16,7 +16,7 @@ def new(ctx, name: str, currency: str):
 @click.option("--id", type=int, required=True)
 @click.pass_context
 def rm(ctx, id: int):
-    click.echo(f"removed account with {id=}")
+    ctx.obj.delete_account(id)
 
 @account.command
 @click.option("--id", type=int, required=True)
@@ -24,12 +24,12 @@ def rm(ctx, id: int):
 @click.option("-c", "--currency", type=str)
 @click.pass_context
 def edit(ctx, id: int, name: str, currency: str):
-    click.echo(f"edited account with {id=}, {name=}, {currency=}")
+    ctx.obj.edit_account(id, name, currency)
 
 @account.command
 @click.pass_context
 def ls(ctx):
-    click.echo("Listing all accounts")
+    ctx.obj.list_accounts()
 
 
 
