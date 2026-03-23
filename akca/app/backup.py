@@ -1,12 +1,7 @@
 import click
 
-
-@click.group
-def backup():
-    pass
-
-@backup.command
+@click.command
 @click.argument("directory")
 @click.pass_context
-def directory(ctx, directory: str):
-    click.echo(f"backup to {directory=}")
+def backup(ctx, directory: str):
+    ctx.obj.backup_directory(directory)

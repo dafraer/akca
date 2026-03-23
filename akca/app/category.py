@@ -10,13 +10,13 @@ def category():
 @click.option("-p", "--parent", type=int)
 @click.pass_context
 def new(ctx, name: str, parent: int):
-    click.echo(f"new category created: {name=}, {parent=}")
+    ctx.obj.create_category(name, parent)
 
 @category.command
 @click.option("--id", type=int, required=True)
 @click.pass_context
 def rm(ctx, id: int):
-    click.echo(f"removed category with {id=}")
+    ctx.obj.delete_category(id)
 
 @category.command
 @click.option("--id", type=int, required=True)
@@ -24,14 +24,14 @@ def rm(ctx, id: int):
 @click.option("-p", "--parent", type=int)
 @click.pass_context
 def edit(ctx, id: int, name: str, parent: str):
-    click.echo(f"edited category with {id=}, {name=}, {parent=}")
+    ctx.obj.edit_category(id, name, parent)
 
 @category.command
 @click.pass_context
 def tree(ctx):
-    click.echo("Showing category tree with spending")
+    ctx.obj.category_tree()
 
 @category.command
 @click.pass_context
 def ls(ctx):
-    click.echo("Listing all categories")
+    ctx.obj.list_categories()

@@ -9,4 +9,4 @@ TO_DATE=datetime.today().strftime("%d/%m/%Y")
 @click.option("-to","--to_date", type=str, default=TO_DATE)
 @click.pass_context
 def stats(ctx, from_date: str, to_date: str):
-    click.echo(f"showing stats: {from_date=}, {to_date=}")
+    ctx.obj.stats(from_date, to_date)
