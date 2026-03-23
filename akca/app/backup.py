@@ -4,4 +4,4 @@ import click
 @click.argument("directory")
 @click.pass_context
 def backup(ctx, directory: str):
-    ctx.obj.backup_directory(directory)
+    ctx.obj.backup(directory)
