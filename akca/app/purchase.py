@@ -1,5 +1,6 @@
-import click
 from datetime import datetime
+
+import click
 
 TIME=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 FROM_DATE="01/01/2001"
@@ -9,6 +10,7 @@ TO_DATE=datetime.today().strftime("%d/%m/%Y")
 @click.group
 def purchase():
     pass
+
 
 @purchase.command
 @click.option("-n", "--name", type=str, required=True)
@@ -20,11 +22,13 @@ def purchase():
 def new(ctx, name: str, amount: int, desc: str, category: str, time: str):
     ctx.obj.create_purchase(name, amount, desc, category, time)
 
+
 @purchase.command
 @click.option("--id", type=int, required=True)
 @click.pass_context
 def rm(ctx, id: int):
     ctx.obj.delete_purchase(id)
+
 
 @purchase.command
 @click.option("--id", type=int, required=True)
@@ -36,6 +40,7 @@ def rm(ctx, id: int):
 @click.pass_context
 def edit(ctx, id: int, name: str, amount: int, desc: str, categories: str, time: str):
     ctx.obj.edit_purchase(id, name, amount, desc, categories, time)
+
 
 @purchase.command
 @click.option("-n", "--name", type=str)

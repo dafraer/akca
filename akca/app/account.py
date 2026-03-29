@@ -1,6 +1,5 @@
 import click
 
-
 @click.group
 def account():
     pass
@@ -12,11 +11,13 @@ def account():
 def new(ctx, name: str, currency: str):
    ctx.obj.create_account(name, currency) 
 
+
 @account.command
 @click.option("--id", type=int, required=True)
 @click.pass_context
 def rm(ctx, id: int):
     ctx.obj.delete_account(id)
+
 
 @account.command
 @click.option("--id", type=int, required=True)
@@ -25,6 +26,7 @@ def rm(ctx, id: int):
 @click.pass_context
 def edit(ctx, id: int, name: str, currency: str):
     ctx.obj.edit_account(id, name, currency)
+
 
 @account.command
 @click.pass_context

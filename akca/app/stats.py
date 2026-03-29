@@ -1,8 +1,10 @@
-import click
 from datetime import datetime
+
+import click
 
 FROM_DATE="01/01/2001"
 TO_DATE=datetime.today().strftime("%d/%m/%Y")
+
 
 @click.command
 @click.option("-from","--from_date", type=str, default=FROM_DATE)

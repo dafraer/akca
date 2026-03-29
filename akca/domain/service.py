@@ -1,11 +1,6 @@
 from akca.db import store
-from akca.domain import account
-from akca.domain import backup 
-from akca.domain import category 
-from akca.domain import purchase 
-from akca.domain import stats 
+from akca.domain import account, backup, category, purchase, stats
 
-import click
 
 class Service():
     def __init__(self, store: store.Store):
