@@ -2,6 +2,8 @@ from datetime import datetime
 
 import click
 
+from akca.domain.purchase import CreatePurchaseParams, EditPurchaseParams, ListPurchasesParams
+
 TIME=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 FROM_DATE="01/01/2001"
 TO_DATE=datetime.today().strftime("%d/%m/%Y")
@@ -20,7 +22,7 @@ def purchase():
 @click.option("-t", "--time", type=str, default=TIME)
 @click.pass_context
 def new(ctx, name: str, amount: int, desc: str, category: str, time: str):
-    ctx.obj.create_purchase(name, amount, desc, category, time)
+    ctx.obj.create_purchase(CreatePurchaseParams(name, amount, desc, category, time))
 
 
 @purchase.command
@@ -39,7 +41,7 @@ def rm(ctx, id: int):
 @click.option("-t", "--time", type=str)
 @click.pass_context
 def edit(ctx, id: int, name: str, amount: int, desc: str, categories: str, time: str):
-    ctx.obj.edit_purchase(id, name, amount, desc, categories, time)
+    ctx.obj.edit_purchase(EditPurchaseParams(id, name, amount, desc, categories, time))
 
 
 @purchase.command
@@ -51,4 +53,4 @@ def edit(ctx, id: int, name: str, amount: int, desc: str, categories: str, time:
 @click.option("-m", "--max", type=int)
 @click.pass_context
 def ls(ctx, name: str, from_date: str, to_date: str, category: str, sort: str, max: int):
-    ctx.obj.list_purchases(name, from_date, to_date, category, sort, max)
+    ctx.obj.list_purchases(ListPurchasesParams(name, from_date, to_date, category, sort, max))
