@@ -1,10 +1,9 @@
-from akca.db import store
-from akca.domain import account, backup, category, purchase, stats
+from akca.store import account, backup, category, purchase, stats
+ 
 
-
-class Service():
-    def __init__(self, store: store.Store):
-        self.store = store
+class Store():
+    def __init__(self):
+        pass
     create_account = account.create
     edit_account = account.edit
     delete_account = account.delete
@@ -20,3 +19,4 @@ class Service():
     delete_purchase = purchase.delete
     list_purchases = purchase.list
     stats = stats.stats
+        

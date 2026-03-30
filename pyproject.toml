@@ -8,7 +8,7 @@ dependencies = [
 ]
 
 [project.scripts]
-akca = "akca.app.app:cli"
+akca = "akca.app:cli"
 
 [build-system]
 requires = ["flit_core<4"]

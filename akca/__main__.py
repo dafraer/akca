@@ -1,4 +1,4 @@
-from .app.app import cli
+from akca.app import cli
 
 def main():
     cli()   
