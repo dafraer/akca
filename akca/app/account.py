@@ -31,7 +31,8 @@ def edit(ctx, id: int, name: str, currency: str):
 @account.command
 @click.pass_context
 def ls(ctx):
-    ctx.obj.list_accounts()
+    accounts = ctx.obj.list_accounts()
+    click.echo(accounts)
 
 
 
