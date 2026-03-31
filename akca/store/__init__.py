@@ -1,11 +1,14 @@
 import sqlite3
 
+import logging
+
 from akca.store import account, backup, category, purchase, stats
  
 STORE_PATH = "/Users/kamil/Downloads/projects/akca-cli/akca.db"
 
 class Store():
-    def __init__(self, path=STORE_PATH):
+    def __init__(self, logger: logging.Logger, path=STORE_PATH):
+        self.logger = logger 
         self.conn = sqlite3.connect(path) 
         cur = self.conn.cursor()
         cur.execute("""

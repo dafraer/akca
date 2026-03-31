@@ -9,7 +9,13 @@ def account():
 @click.option("-c", "--currency", type=str, required=True)
 @click.pass_context
 def new(ctx, name: str, currency: str):
-   ctx.obj.create_account(name, currency) 
+    try:
+        id = ctx.obj.create_account(name, currency) 
+    except:
+        click.echo("Error creating new account")
+        raise SystemExit(1)
+    else:
+        click.echo(f"New account has been created successfully, {id=}")
 
 
 @account.command

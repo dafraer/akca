@@ -1,10 +1,13 @@
+import logging
+
 from akca.store import Store 
 from akca.domain import account, backup, category, purchase, stats
 
 
 class Service():
-    def __init__(self, store: Store):
+    def __init__(self, store: Store, logger: logging.Logger):
         self.store = store
+        self.logger = logger
     create_account = account.create
     edit_account = account.edit
     delete_account = account.delete

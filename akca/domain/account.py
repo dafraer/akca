@@ -1,8 +1,10 @@
 import click
 
 def create(self, name: str, currency: str) -> int:
-    self.store.create_account(name, currency) 
-    
+    try: 
+        self.store.create_account(name, currency) 
+    except:
+        pass  
 
 def edit(self, id: int, name: str, currency: str) -> int:
     self.store.edit_account(id, name, currency) 
