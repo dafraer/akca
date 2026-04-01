@@ -1,4 +1,3 @@
-import click
 
 def create(self, name: str, currency: str) -> int:
     cur = self.conn.cursor()
