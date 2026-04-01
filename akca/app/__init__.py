@@ -15,18 +15,22 @@ from akca.domain import Service
 @click.pass_context
 @click.option("-v","--verbose", is_flag=True)
 def cli(ctx, verbose):
-    #disable logging if verbose flag is not set
-    if not verbose:
-        logging.getLogger().setLevel(logging.CRITICAL + 1)
-    
     logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(name)s - |%(levelname)s| - %(message)s" 
-        )
+        level=logging.DEBUG,
+        format="%(name)s - |%(levelname)s| - %(filename)s:%(lineno)d - %(message)s"
+    )
     logger = logging.getLogger(__name__)
-    store = Store(logger)
-    ctx.obj = Service(store, logger)
 
+    #disable all logging except for errors if verbose flag is not set
+    if not verbose:
+        logger.setLevel(logging.ERROR)
+
+    try:
+        store = Store(logger)
+        ctx.obj = Service(store, logger)
+    except Exception as e:
+        logger.error(f"Error creating store: {e}")
+        raise SystemExit(1)
 
 cli.add_command(account)
 cli.add_command(category)

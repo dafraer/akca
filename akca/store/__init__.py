@@ -6,11 +6,15 @@ from akca.store import account, backup, category, purchase, stats
  
 STORE_PATH = "/Users/kamil/Downloads/projects/akca-cli/akca.db"
 
-class Store():
+class Store:
     def __init__(self, logger: logging.Logger, path=STORE_PATH):
-        self.logger = logger 
-        self.conn = sqlite3.connect(path) 
+        self.logger = logger
+
+        self.conn = sqlite3.connect(path)
+        logger.info(f"Connected to {path}")
+
         cur = self.conn.cursor()
+
         cur.execute("""
                         create table if not exists accounts (
                             id integer primary key autoincrement,
@@ -18,6 +22,9 @@ class Store():
                             currency text not null
                         );
                     """)
+
+        logger.info("Initialized accounts table")
+
         cur.execute("""
                         create table if not exists categories (
                             id integer primary key autoincrement,
@@ -26,6 +33,9 @@ class Store():
                             foreign key (parent_id) references categories(id)
                         );
                     """)
+
+        logger.info("Initialized categories table")
+
         cur.execute("""
                         create table if not exists purchases ( 
                             id integer primary key autoincrement,
@@ -39,12 +49,13 @@ class Store():
                             foreign key (account_id) references accounts(id)
                         );
                     """)
-         
+
+        logger.info("Initialized purchases table")
 
     create_account = account.create
     edit_account = account.edit
     delete_account = account.delete
-    list_accounts = account.list
+    list_accounts = account.list_
     backup = backup.backup
     create_category = category.create
     edit_category = category.edit

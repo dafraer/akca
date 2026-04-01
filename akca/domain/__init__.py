@@ -4,14 +4,15 @@ from akca.store import Store
 from akca.domain import account, backup, category, purchase, stats
 
 
-class Service():
+class Service:
     def __init__(self, store: Store, logger: logging.Logger):
         self.store = store
         self.logger = logger
+        logger.info("Initialized service")
     create_account = account.create
     edit_account = account.edit
     delete_account = account.delete
-    list_accounts = account.list
+    list_accounts = account.list_
     backup = backup.backup
     create_category = category.create
     edit_category = category.edit
