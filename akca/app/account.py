@@ -60,7 +60,7 @@ def ls(ctx, limit: int, order_by: str):
         raise SystemExit(1)
     columns, rows = os.get_terminal_size()
 
-    #TODO: Remake into a seperate function
+    #TODO: Remake into a separate function
     output = "+" + "-" * (columns - 2) + "+"
     section_width = (columns - 4)//3
     output = "\n".join([output, "| id" + (" " * (section_width-3)) + "| name" + (" " * (section_width-5)) + "| currency" + (" " * (section_width-9))])
