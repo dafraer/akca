@@ -1,4 +1,3 @@
-
 def create(self, name: str, currency: str) -> int:
     cur = self.conn.cursor()
     cur.execute("insert into accounts (name, currency) values (?, ?);", (name, currency))
@@ -9,6 +8,7 @@ def create(self, name: str, currency: str) -> int:
     self.logger.info(f"Account created: {id_=}, {name=}, {currency=}")
 
     return id_
+
 
 def edit(self, id_: int, name: str, currency: str):
     cur = self.conn.cursor()
@@ -25,6 +25,7 @@ def edit(self, id_: int, name: str, currency: str):
     self.logger.info(f"Account updated: {id_=}, {name=}, {currency=}")
 
     self.conn.commit()
+
 
 def delete(self, id_: int):
     cur = self.conn.cursor()
