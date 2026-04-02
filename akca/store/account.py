@@ -28,7 +28,7 @@ def edit(self, id_: int, name: str, currency: str):
 
 def delete(self, id_: int):
     cur = self.conn.cursor()
-    cur.execute("delete from accounts where id=?;", id_)
+    cur.execute("delete from accounts where id=?;", (id_,))
     self.conn.commit()
 
     self.logger.info(f"Account deleted: {id_}")

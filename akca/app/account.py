@@ -1,6 +1,6 @@
-import os
-
 import click
+
+from akca.app.helpers import format_table
 
 MAX_LIMIT = 100
 
@@ -58,14 +58,7 @@ def ls(ctx, limit: int, order_by: str):
     except Exception as e:
         ctx.obj.logger.error(f"Error listing accounts: {e}")
         raise SystemExit(1)
-    columns, rows = os.get_terminal_size()
-
-    #TODO: Remake into a separate function
-    output = "+" + "-" * (columns - 2) + "+"
-    section_width = (columns - 4)//3
-    output = "\n".join([output, "| id" + (" " * (section_width-3)) + "| name" + (" " * (section_width-5)) + "| currency" + (" " * (section_width-9))])
+    output = format_table( ["id", "name", "currency"] ,accounts)
     click.echo(output)
-
-
 
 
