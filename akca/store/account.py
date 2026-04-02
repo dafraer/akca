@@ -36,7 +36,7 @@ def delete(self, id_: int):
 
 def list_(self, limit: int, order_by: str) -> list[tuple]:
     cur = self.conn.cursor()
-    res = cur.execute("select id, name, currency from accounts order by ? limit ?;", (order_by, limit))
+    res = cur.execute(f"select id, name, currency from accounts order by {order_by} limit ?;", (limit,))
     rows = res.fetchall()
 
     self.logger.info(f"Accounts retrieved successfully: {rows}")
