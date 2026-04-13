@@ -9,6 +9,7 @@ STORE_PATH = "/Users/kamil/Downloads/projects/akca-cli/akca.db"
 class Store:
     def __init__(self, logger: logging.Logger, path=STORE_PATH):
         self.logger = logger
+        self.path = path
 
         self.conn = sqlite3.connect(path)
         logger.info(f"Connected to {path}")

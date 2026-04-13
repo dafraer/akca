@@ -1,4 +1,7 @@
-import click
+import shutil
+from datetime import date
+
+
 
 def backup(self, directory: str):
-    click.echo(f"backup to {directory=}")
+    shutil.copyfile(self.path, f"{directory}/backup{date.today()}.db")
