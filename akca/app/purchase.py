@@ -47,18 +47,19 @@ def rm(ctx, id: int):
 @purchase.command
 @click.option("--id", type=int, required=True)
 @click.option("-n", "--name", type=str)
-@click.option("-a", "--amount", type=int)
+@click.option("-a", "--amount", type=float)
 @click.option("-d", "--description", type=str)
 @click.option("-c", "--category", type=str)
 @click.option("-t", "--time", type=str)
+@click.option("-acc", "--account", type=str)
 @click.pass_context
-def edit(ctx, id: int, name: str, amount: int, desc: str, categories: str, time: str):
+def edit(ctx, id: int, name: str, amount: float, description: str, category: str, time: str, account: str):
     try:
-        ctx.obj.edit_purchase(EditPurchaseParams(id, name, amount, desc, categories, time))
+        ctx.obj.edit_purchase(EditPurchaseParams(id, name, amount, description, category, time, account))
     except Exception as e:
         ctx.obj.logger.error(f"Error editing a purchase: {e}")
         raise SystemExit(1)
-    click.echo(f"Purchase has been edited successfully: {id=} {name=} {amount=} {desc=} {categories=} {time=}")
+    click.echo(f"Purchase has been edited successfully: {id=} {name=} {amount=} {description=} {category=} {time=}")
 
 
 @purchase.command

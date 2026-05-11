@@ -56,19 +56,24 @@ def edit(self, params: EditPurchaseParams):
         values.append(int(datetime.strptime(params.time, "%d/%m/%Y %H:%M:%S").timestamp()))
 
 
-    cur.execute("select id from categories where name = ?", (params.category,))
-    row = cur.fetchone()
-    if row is None:
-        raise ValueError(f"Category '{params.category}' not found")
-    updates.append("category_id = ?")
-    values.append(row[0])
+    if params.category is not None:
+        cur.execute("select id from categories where name = ?", (params.category,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Category '{params.category}' not found")
+        updates.append("category_id = ?")
+        values.append(row[0])
 
-    cur.execute("select id from accounts where name = ?", (params.account,))
-    row = cur.fetchone()
-    if row is None:
-        raise ValueError(f"Account '{params.account}' not found")
-    updates.append("account_id = ?")
-    values.append(row[0])
+    if params.account is not None:
+        cur.execute("select id from accounts where name = ?", (params.account,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Account '{params.account}' not found")
+        updates.append("account_id = ?")
+        values.append(row[0])
+
+    if not updates:
+        return
 
     values.append(params.id)
     cur.execute(f"update purchases set {', '.join(updates)} where id = ?", values)

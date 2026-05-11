@@ -31,8 +31,8 @@ class EditPurchaseParams:
 
 
 def edit(self, params: EditPurchaseParams):
-    # convert amount to cents
-    params.amount = int(params.amount * 100)
+    if params.amount is not None:
+        params.amount = int(params.amount * 100)
     self.store.edit_purchase(params)
 
 
