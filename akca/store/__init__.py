@@ -45,7 +45,7 @@ class Store:
                             item_name text not null,
                             description text,
                             purchased_at integer,
-                            category_id integer,
+                            category_id integer not null,
                             account_id integer not null,
                             foreign key (category_id) references categories(id),
                             foreign key (account_id) references accounts(id)
@@ -76,5 +76,5 @@ class Store:
     create_purchase = purchase.create
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete
-    list_purchases = purchase.list
+    list_purchases = purchase.list_
     stats = stats.stats

@@ -1,48 +1,43 @@
+from datetime import datetime, timezone
+
 from dataclasses import dataclass
-import click
+
 
 @dataclass
 class CreatePurchaseParams:
-    name: str 
-    amount: int 
-    desc: str 
-    category: int 
+    name: str
+    amount: float | int
+    desc: str
+    category: str
     time: str
+    account: str
 
 
-def create(self, params: CreatePurchaseParams):
-    click.echo(f"""new purchase created: 
-               {params.name=}, 
-               {params.amount=}, 
-               {params.desc=}, 
-               {params.category=}, 
-               {params.time=}
-            """)
+def create(self, params: CreatePurchaseParams) -> int:
+    #convert amount to cents
+    params.amount = int(params.amount*100)
+    return self.store.create_purchase(params)
 
 
 @dataclass
 class EditPurchaseParams:
     id: int
     name: str
-    amount: int 
+    amount: float | int
     description: str
     category: str
     time: str
+    account: str
 
 
 def edit(self, params: EditPurchaseParams):
-    click.echo(f"""purchase edited: 
-               {params.id=}, 
-               {params.name=}, 
-               {params.amount=}, 
-               {params.description=}, 
-               {params.category=}, 
-               {params.time=}
-            """)
+    # convert amount to cents
+    params.amount = int(params.amount * 100)
+    self.store.edit_purchase(params)
 
 
-def delete(self, id: int):
-    click.echo(f"purchase deleted: {id=}")
+def delete(self, id_: int):
+    self.store.delete_purchase(id_)
 
 
 @dataclass
@@ -55,5 +50,11 @@ class ListPurchasesParams:
     limit: int
 
 
-def list(self, params: ListPurchasesParams):
-    click.echo(f"purchases listed: {params.name=}, {params.from_date=}, {params.to_date=}, {params.category=}, {params.sort=}, {params.limit=}")
+def list_(self, params: ListPurchasesParams) -> list:
+    purchases = self.store.list_purchases(params)
+    for purchase in purchases:
+        amount_ind = 1
+        purchased_at_id=4
+        purchase[amount_ind] = round(purchase[amount_ind]/100, 2)
+        purchase[purchased_at_id] = datetime.fromtimestamp(purchase[purchased_at_id]).strftime("%Y-%m-%d %H:%M")
+    return purchases
