@@ -1,6 +1,6 @@
 import sqlite3
-
 import logging
+import os
 
 from akca.store import account, backup, category, purchase, stats
 
