@@ -13,6 +13,7 @@ class Store:
         self.logger = logger
         self.path = path
 
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         self.conn = sqlite3.connect(path)
         self.conn.row_factory = sqlite3.Row
         logger.info(f"Connected to {path}")
