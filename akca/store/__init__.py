@@ -12,6 +12,7 @@ class Store:
         self.path = path
 
         self.conn = sqlite3.connect(path)
+        self.conn.row_factory = sqlite3.Row
         logger.info(f"Connected to {path}")
 
         cur = self.conn.cursor()
@@ -29,8 +30,8 @@ class Store:
         cur.execute("""
                         create table if not exists categories (
                             id integer primary key autoincrement,
-                            name text not null,
-                            parent_id integer not null,
+                            name text not null unique,
+                            parent_id integer,
                             foreign key (parent_id) references categories(id)
                         );
                     """)
@@ -53,6 +54,14 @@ class Store:
 
         logger.info("Initialized purchases table")
 
+        cur.execute("create index if not exists idx_purchases_account_id on purchases(account_id);")
+        cur.execute("create index if not exists idx_purchases_category_id on purchases(category_id);")
+        cur.execute("create index if not exists idx_purchases_purchased_at on purchases(purchased_at);")
+        cur.execute("create index if not exists idx_categories_parent_id on categories(parent_id);")
+        cur.execute("create index if not exists idx_categories_name on categories(name);")
+
+        logger.info("Initialized indexes")
+
     create_account = account.create
     edit_account = account.edit
     delete_account = account.delete
@@ -62,10 +71,10 @@ class Store:
     edit_category = category.edit
     delete_category = category.delete
     category_tree = category.tree
-    list_categories = category.list
+    list_categories = category.list_
+    check_category_cycle = category.check_cycle
     create_purchase = purchase.create
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete
     list_purchases = purchase.list
     stats = stats.stats
-        

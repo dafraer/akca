@@ -11,6 +11,8 @@ from akca.store import Store
 from akca.domain import Service
 
 
+MAX_LIMIT = 100
+
 @click.group
 @click.pass_context
 @click.option("-v","--verbose", is_flag=True)

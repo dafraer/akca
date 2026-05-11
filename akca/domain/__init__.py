@@ -18,7 +18,7 @@ class Service:
     edit_category = category.edit
     delete_category = category.delete
     category_tree = category.tree
-    list_categories = category.list
+    list_categories = category.list_
     create_purchase = purchase.create
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete

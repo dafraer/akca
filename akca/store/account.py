@@ -20,6 +20,8 @@ def edit(self, id_: int, name: str, currency: str):
                 ;""", (name, currency, id_))
 
     row = cur.fetchone()
+    if row is None:
+        raise ValueError(f"Account with id {id_} not found")
     id_, name, currency = row
 
     self.logger.info(f"Account updated: {id_=}, {name=}, {currency=}")
@@ -30,6 +32,8 @@ def edit(self, id_: int, name: str, currency: str):
 def delete(self, id_: int):
     cur = self.conn.cursor()
     cur.execute("delete from accounts where id=?;", (id_,))
+    if cur.rowcount == 0:
+        raise ValueError(f"Account with id {id_} not found")
     self.conn.commit()
 
     self.logger.info(f"Account deleted: {id_}")

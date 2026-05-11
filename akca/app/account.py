@@ -1,8 +1,7 @@
 import click
 
 from akca.app.helpers import format_table
-
-MAX_LIMIT = 100
+ROWS_LIMIT = 100
 
 @click.group
 def account():
@@ -47,7 +46,7 @@ def edit(ctx, id: int, name: str, currency: str):
 
 
 @account.command
-@click.option("--limit", type=click.IntRange(min=1, max=MAX_LIMIT), default=10)
+@click.option("--limit", type=click.IntRange(min=1, max=ROWS_LIMIT), default=10)
 @click.option("--order_by",
               type=click.Choice(["id", "name", "currency"], case_sensitive=True),
               default="id")
