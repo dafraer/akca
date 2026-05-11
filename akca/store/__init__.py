@@ -3,11 +3,13 @@ import sqlite3
 import logging
 
 from akca.store import account, backup, category, purchase, stats
- 
-STORE_PATH = "/Users/kamil/Downloads/projects/akca-cli/akca.db"
+
+def store_path() -> str:
+    base = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+    return os.path.join(base, "akca", "akca.db")
 
 class Store:
-    def __init__(self, logger: logging.Logger, path=STORE_PATH):
+    def __init__(self, logger: logging.Logger, path=store_path()):
         self.logger = logger
         self.path = path
 
