@@ -70,7 +70,7 @@ def edit(ctx, id: int, name: str, amount: float, description: str, category: str
 @click.option("-s", "--sort", type=click.Choice(["time", "amount", "alphabet"]))
 @click.option("-l", "--limit", type=click.IntRange(min=1, max=ROWS_LIMIT), default=10 )
 @click.pass_context
-def ls(ctx, name: str, from_date: str, to_date: str, category: str, sort: str, limit: int):
+def ls(ctx, name: str, from_date: datetime, to_date: datetime, category: str, sort: str, limit: int):
     if from_date >= to_date:
         raise click.UsageError("to_date must be after from_date") 
     try:

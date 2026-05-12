@@ -1,0 +1,6 @@
+{
+  "env": {
+    "VIRTUAL_ENV": "/Users/kamil/Downloads/projects/akca-cli/.venv",
+    "PATH": "/Users/kamil/Downloads/projects/akca-cli/.venv/bin:${PATH}"
+  }
+}
