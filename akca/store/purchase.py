@@ -19,7 +19,7 @@ def create(self, params: CreatePurchaseParams) -> int:
         raise ValueError(f"Account '{params.account}' not found")
     account_id = row[0]
 
-    purchased_at = int(datetime.strptime(params.time, "%d/%m/%Y %H:%M:%S").timestamp())
+    purchased_at = int(params.time.timestamp())
 
     cur.execute(
         "insert into purchases (amount, item_name, description, purchased_at, category_id, account_id) values (?, ?, ?, ?, ?, ?)",
@@ -53,7 +53,7 @@ def edit(self, params: EditPurchaseParams):
 
     if params.time is not None:
         updates.append("purchased_at = ?")
-        values.append(int(datetime.strptime(params.time, "%d/%m/%Y %H:%M:%S").timestamp()))
+        values.append(int(params.time.timestamp()))
 
 
     if params.category is not None:
@@ -102,12 +102,12 @@ def list_(self, params: ListPurchasesParams) -> list:
         values.append(f"%{params.name}%")
 
     if params.from_date is not None:
-        from_ts = int(datetime.strptime(params.from_date, "%d/%m/%Y").timestamp())
+        from_ts = int(params.from_date.timestamp())
         conditions.append("purchased_at >= ?")
         values.append(from_ts)
 
     if params.to_date is not None:
-        to_dt = datetime.strptime(params.to_date, "%d/%m/%Y").replace(hour=23, minute=59, second=59)
+        to_dt = params.to_date.replace(hour=23, minute=59, second=59)
         conditions.append("purchased_at <= ?")
         values.append(int(to_dt.timestamp()))
 

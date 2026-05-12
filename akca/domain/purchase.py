@@ -9,7 +9,7 @@ class CreatePurchaseParams:
     amount: float | int
     desc: str
     category: str
-    time: str
+    time: datetime 
     account: str
 
 
@@ -26,7 +26,7 @@ class EditPurchaseParams:
     amount: float | int
     description: str
     category: str
-    time: str
+    time: datetime 
     account: str
 
 
@@ -43,8 +43,8 @@ def delete(self, id_: int):
 @dataclass
 class ListPurchasesParams:
     name: str 
-    from_date: str 
-    to_date: str 
+    from_date: datetime 
+    to_date: datetime 
     category: str 
     sort: str 
     limit: int
