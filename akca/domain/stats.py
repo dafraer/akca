@@ -23,6 +23,7 @@ class Stats:
     max_month: list[str, float]
     min_month: list[str, float]
     categories: list[dict]
+    top_merchant: tuple[str, float] | None
     currency: str
 
 
@@ -38,8 +39,8 @@ def _int_to_month_str(n: int) -> str:
     return f"{n // 100:04d}-{n % 100:02d}"
 
 
-def trends(self, from_date: date, to_date: date, account: str, group_by: str, category: str | None):
-    raw = self.store.trends_stats(_date_to_int(from_date), _date_to_int(to_date), account, group_by, category)
+def trends(self, from_date: date, to_date: date, account: str, group_by: str, category: str | None, merchant: str | None):
+    raw = self.store.trends_stats(_date_to_int(from_date), _date_to_int(to_date), account, group_by, category, merchant)
     currency = raw["currency"]
 
     result = []
@@ -113,6 +114,9 @@ def general(self, from_date: date, to_date: date, account: str) -> Stats:
 
     categories = _build_category_tree(raw["categories"], currency)
 
+    tm = raw["top_merchant"]
+    top_merchant = (tm[0], round(tm[1] / 100, 2)) if tm else None
+
     return Stats(
         total=round(total, 2),
         purchase_quantity=count,
@@ -125,5 +129,6 @@ def general(self, from_date: date, to_date: date, account: str) -> Stats:
         max_month=to_month_tuple(raw["max_month"]),
         min_month=to_month_tuple(raw["min_month"]),
         categories=categories,
+        top_merchant=top_merchant,
         currency=currency,
     )

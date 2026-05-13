@@ -1,4 +1,4 @@
-def trends(self, from_date: int, to_date: int, account: str, group_by: str, category: str | None) -> dict:
+def trends(self, from_date: int, to_date: int, account: str, group_by: str, category: str | None, merchant: str | None) -> dict:
     cur = self.conn.cursor()
 
     cur.execute("select id, currency from accounts where name = ?", (account,))
@@ -32,6 +32,10 @@ def trends(self, from_date: int, to_date: int, account: str, group_by: str, cate
             raise ValueError(f"Category '{category}' not found")
         conditions.append(f"category_id in ({','.join('?' * len(cat_ids))})")
         values.extend(cat_ids)
+
+    if merchant:
+        conditions.append("merchant = ?")
+        values.append(merchant)
 
     where = " and ".join(conditions)
     rows = cur.execute(
@@ -107,6 +111,15 @@ def general(self, from_date: int, to_date: int, account: str) -> dict:
         (account_id, from_date, to_date),
     ).fetchone()
 
+    top_merchant = cur.execute(
+        """select merchant, sum(amount)
+           from purchases
+           where account_id = ? and date >= ? and date <= ? and merchant is not null
+           group by merchant
+           order by sum(amount) desc limit 1""",
+        (account_id, from_date, to_date),
+    ).fetchone()
+
     categories = cur.execute(
         """with recursive
                relevant(id) as (
@@ -142,5 +155,6 @@ def general(self, from_date: int, to_date: int, account: str) -> dict:
         "min_day": min_day,
         "max_month": max_month,
         "min_month": min_month,
+        "top_merchant": top_merchant,
         "categories": categories,
     }

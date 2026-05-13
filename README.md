@@ -69,9 +69,10 @@ Akca stores its database at `~/.local/share/akca/akca.db` and creates it automat
 
 - 🏦 **Multiple accounts** — track different budgets (personal, business, etc.) each with their own currency
 - 🗂 **Nested categories** — organize spending into a tree of categories and subcategories of any depth
-- 🧾 **Purchase log** — add, edit, delete, and list purchases with filtering and sorting
-- 📊 **General stats** — total spend, purchase count, averages, largest/smallest purchase, most/least expensive day and month, spending breakdown displayed as a category tree that rolls up subcategory totals
-- 📈 **Trends** — bar-chart view of spending grouped by day, month, or year, with optional category filter
+- 🏪 **Merchant tracking** — tag purchases with a store or merchant and filter by it anywhere
+- 🧾 **Purchase log** — add, edit, delete, and list purchases with filtering by name, category, merchant, and date range
+- 📊 **General stats** — total spend, purchase count, averages, largest/smallest purchase, most/least expensive day and month, top merchant, and spending breakdown as a category tree that rolls up subcategory totals
+- 📈 **Trends** — bar-chart view of spending grouped by day, month, or year, filterable by category and merchant
 
 
 
@@ -103,19 +104,19 @@ akca category tree
 
 ```sh
 # Add a purchase (date defaults to today)
-akca purchase new -n "Trader Joe's" -a 54.30 -c "groceries" -acc "personal"
+akca purchase new -n "Weekly shop" -a 54.30 -c "groceries" -acc "personal" -m "Aldi"
 
-# Add with an explicit date
+# Add with an explicit date, no merchant
 akca purchase new -n "Uber" -a 12.50 -c "rideshare" -acc "personal" -d 2026-05-01
 
 # List recent purchases
 akca purchase ls
 
-# Filter by category and date range, sort by amount
-akca purchase ls -c "food" -from 2026-01-01 -to 2026-05-13 -s amount -l 20
+# Filter by category, merchant, and date range; sort by amount
+akca purchase ls -c "food" -m "Aldi" -from 2026-01-01 -to 2026-05-13 -s amount -l 20
 
-# Edit a purchase
-akca purchase edit --id 42 -a 60.00
+# Edit a purchase (add or change merchant)
+akca purchase edit --id 42 -a 60.00 -m "Whole Foods"
 
 # Delete a purchase
 akca purchase rm --id 42
@@ -140,13 +141,23 @@ Example output:
 | Stats for personal account                           |
 +------------------------------------------------------+
 | Total spent this month: 1034.29 USD                  |
+|                                                      |
 | Number of purchases: 58                              |
+|                                                      |
 | Average daily spending: 86.19 USD                    |
+|                                                      |
 | Average monthly spending: 1034.29 USD                |
-| Largest purchase: Trader Joe's 139.25 USD            |
-| Smallest purchase: Train ticket 2.65 USD             |
+|                                                      |
+| Largest purchase: Weekly shop 139.25 USD             |
+|                                                      |
+| Smallest purchase: Espresso 2.65 USD                 |
+|                                                      |
 | Most expensive day: 2026-05-07, spent: 211.53 USD    |
+|                                                      |
 | Cheapest day: 2026-05-06, spent: 4.25 USD            |
+|                                                      |
+| Top merchant: Aldi 350.00 USD                        |
+|                                                      |
 +------------------------------------------------------+
 Spending by category:
 .
@@ -156,7 +167,7 @@ Spending by category:
 │       ├── fast-food  6.37 USD
 │       └── fine-dining  74.21 USD
 └── transport  131.64 USD
-    └── fuel  116.92 USD
+    └── rideshare  131.64 USD
 ```
 
 ### Trends
@@ -168,8 +179,14 @@ akca stats trends -acc "personal" -gb month
 # Daily chart for a specific month
 akca stats trends -acc "personal" -gb day -from 2026-04-01 -to 2026-04-30
 
-# Monthly chart filtered to a category (includes subcategories)
+# Monthly chart filtered to a category (includes all subcategories)
 akca stats trends -acc "personal" -gb month -c "food"
+
+# Monthly chart filtered to a specific merchant
+akca stats trends -acc "personal" -gb month -m "Aldi"
+
+# Combine category and merchant filters
+akca stats trends -acc "personal" -gb month -c "groceries" -m "Aldi"
 ```
 
 Example output:

@@ -11,6 +11,7 @@ class CreatePurchaseParams:
     category: str
     date: date
     account: str
+    merchant: str | None
 
 
 def create(self, params: CreatePurchaseParams) -> int:
@@ -27,6 +28,7 @@ class EditPurchaseParams:
     category: str
     date: date
     account: str
+    merchant: str | None
 
 
 def edit(self, params: EditPurchaseParams):
@@ -47,10 +49,16 @@ class ListPurchasesParams:
     category: str
     sort: str
     limit: int
+    merchant: str | None
+
+
+def _int_to_date(n: int) -> str:
+    return f"{n // 10000:04d}-{(n % 10000) // 100:02d}-{n % 100:02d}"
+
 
 def list_(self, params: ListPurchasesParams) -> list:
     purchases = self.store.list_purchases(params)
     for purchase in purchases:
         purchase[1] = round(purchase[1] / 100, 2)
-        purchase[4] =  str(datetime.strptime(str(purchase[4]), '%Y%m%d').date())
+        purchase[5] = _int_to_date(purchase[5])
     return purchases

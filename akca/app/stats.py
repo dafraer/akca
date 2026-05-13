@@ -16,11 +16,12 @@ def stats():
 @stats.command
 @click.option("-gb", "--group_by", type=click.Choice(["month", "day", "year"]), default="month")
 @click.option("-c", "--category", type=str, default=None)
+@click.option("-m", "--merchant", type=str, default=None)
 @click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-acc", "--account", required=True)
 @click.pass_context
-def trends(ctx, group_by: str, category: str, account: str, from_date, to_date):
+def trends(ctx, group_by: str, category: str, merchant: str, account: str, from_date, to_date):
     if from_date and to_date:
         from_date = from_date.date()
         to_date = to_date.date()
@@ -32,7 +33,7 @@ def trends(ctx, group_by: str, category: str, account: str, from_date, to_date):
         raise click.UsageError("to_date must be after from_date")
 
     try:
-        rows, currency = ctx.obj.trends_stats(from_date, to_date, account, group_by, category)
+        rows, currency = ctx.obj.trends_stats(from_date, to_date, account, group_by, category, merchant)
     except Exception as e:
         ctx.obj.logger.error(f"Error getting trends: {e}")
         raise SystemExit(1)
@@ -99,6 +100,7 @@ def general(ctx, from_date: datetime, to_date: datetime, account: str, period: s
         [f"Cheapest day: {data.min_day[0]}, spent: {data.min_day[1]} {data.currency}"], [""],
         [f"Most expensive month: {data.max_month[0]}, spent: {data.max_month[1]} {data.currency}"], [""],
         [f"Cheapest month: {data.min_month[0]}, spent: {data.min_month[1]} {data.currency}"], [""],
+        [f"Top merchant: {data.top_merchant[0]} {data.top_merchant[1]} {data.currency}" if data.top_merchant else "Top merchant: N/A"], [""],
     ]
     res = format_table(header, rows)
     res += "\nSpending by category:\n"

@@ -23,8 +23,8 @@ def create(self, params: CreatePurchaseParams) -> int:
     account_id = row[0]
 
     cur.execute(
-        "insert into purchases (amount, item_name, description, date, category_id, account_id) values (?, ?, ?, ?, ?, ?)",
-        (params.amount, params.name, params.desc, _date_to_int(params.date), category_id, account_id),
+        "insert into purchases (amount, item_name, description, merchant, date, category_id, account_id) values (?, ?, ?, ?, ?, ?, ?)",
+        (params.amount, params.name, params.desc, params.merchant, _date_to_int(params.date), category_id, account_id),
     )
     self.conn.commit()
 
@@ -52,6 +52,10 @@ def edit(self, params: EditPurchaseParams):
     if params.description is not None:
         updates.append("description = ?")
         values.append(params.description)
+
+    if params.merchant is not None:
+        updates.append("merchant = ?")
+        values.append(params.merchant)
 
     if params.date is not None:
         updates.append("date = ?")
@@ -119,6 +123,10 @@ def list_(self, params: ListPurchasesParams) -> list:
         conditions.append("category_id = ?")
         values.append(row[0])
 
+    if params.merchant is not None:
+        conditions.append("merchant = ?")
+        values.append(params.merchant)
+
     sort_map = {
         "date": "date desc",
         "amount": "amount desc",
@@ -130,7 +138,7 @@ def list_(self, params: ListPurchasesParams) -> list:
 
     values.append(params.limit)
     rows = cur.execute(
-        f"select id, amount, item_name, description, date, category_id, account_id from purchases {where} order by {order_by} limit ?",
+        f"select id, amount, item_name, description, merchant, date, category_id, account_id from purchases {where} order by {order_by} limit ?",
         values,
     ).fetchall()
 

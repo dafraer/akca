@@ -42,11 +42,12 @@ class Store:
         logger.info("Initialized categories table")
 
         cur.execute("""
-                        create table if not exists purchases ( 
+                        create table if not exists purchases (
                             id integer primary key autoincrement,
                             amount integer not null,
                             item_name text not null,
                             description text,
+                            merchant text,
                             date integer,
                             category_id integer not null,
                             account_id integer not null,
@@ -60,6 +61,7 @@ class Store:
         cur.execute("create index if not exists idx_purchases_account_id on purchases(account_id);")
         cur.execute("create index if not exists idx_purchases_category_id on purchases(category_id);")
         cur.execute("create index if not exists idx_purchases_date on purchases(date);")
+        cur.execute("create index if not exists idx_purchases_merchant on purchases(merchant);")
         cur.execute("create index if not exists idx_categories_parent_id on categories(parent_id);")
         cur.execute("create index if not exists idx_categories_name on categories(name);")
 
