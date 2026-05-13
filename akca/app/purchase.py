@@ -73,7 +73,7 @@ def edit(ctx, id: int, name: str, amount: float, description: str, category: str
 def ls(ctx, name: str, from_date, to_date, category: str, sort: str, limit: int):
     from_date = from_date.date()
     to_date = to_date.date()
-    if from_date >= to_date:
+    if from_date > to_date:
         raise click.UsageError("to_date must be after from_date")
     try:
         purchases = ctx.obj.list_purchases(ListPurchasesParams(name, from_date, to_date, category, sort, limit))

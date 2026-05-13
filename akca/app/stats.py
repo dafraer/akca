@@ -28,7 +28,7 @@ def trends(ctx, group_by: str, category: str, account: str, from_date, to_date):
         from_date = FROM_DATE
         to_date = TODAY
 
-    if from_date >= to_date:
+    if from_date > to_date:
         raise click.UsageError("to_date must be after from_date")
 
     try:
@@ -48,7 +48,7 @@ def trends(ctx, group_by: str, category: str, account: str, from_date, to_date):
     lines = []
     for label, amount in rows:
         bar_len = round(amount / max_amount * BAR_MAX) if max_amount > 0 else 0
-        lines.append(f"{label:<{label_width}}  {'█' * bar_len} {amount} {currency}")
+        lines.append(f"{label:<{label_width}}  {'█' * bar_len:<{BAR_MAX}} {amount} {currency}")
 
     click.echo("\n".join(lines))
 
@@ -78,7 +78,7 @@ def general(ctx, from_date: datetime, to_date: datetime, account: str, period: s
         to_date = TODAY
         p1 = "all time"
 
-    if from_date >= to_date:
+    if from_date > to_date:
         raise click.UsageError("to_date must be after from_date")
 
     try:
