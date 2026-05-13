@@ -15,13 +15,42 @@ def stats():
 
 @stats.command
 @click.option("-gb", "--group_by", type=click.Choice(["month", "day", "year"]), default="month")
-@click.option("-c", "--category", type=str)
+@click.option("-c", "--category", type=str, default=None)
 @click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-acc", "--account", required=True)
 @click.pass_context
-def trends(group_by: str, category: str, account: str, from_date: datetime, to_date: datetime):
-    pass 
+def trends(ctx, group_by: str, category: str, account: str, from_date, to_date):
+    if from_date and to_date:
+        from_date = from_date.date()
+        to_date = to_date.date()
+    else:
+        from_date = FROM_DATE
+        to_date = TODAY
+
+    if from_date >= to_date:
+        raise click.UsageError("to_date must be after from_date")
+
+    try:
+        rows, currency = ctx.obj.trends_stats(from_date, to_date, account, group_by, category)
+    except Exception as e:
+        ctx.obj.logger.error(f"Error getting trends: {e}")
+        raise SystemExit(1)
+
+    if not rows:
+        click.echo("No data.")
+        return
+
+    BAR_MAX = 30
+    max_amount = max(amount for _, amount in rows)
+    label_width = max(len(label) for label, _ in rows)
+
+    lines = []
+    for label, amount in rows:
+        bar_len = round(amount / max_amount * BAR_MAX) if max_amount > 0 else 0
+        lines.append(f"{label:<{label_width}}  {'█' * bar_len} {amount} {currency}")
+
+    click.echo("\n".join(lines))
 
 @stats.command
 @click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)

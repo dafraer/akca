@@ -1,3 +1,48 @@
+def trends(self, from_date: int, to_date: int, account: str, group_by: str, category: str | None) -> dict:
+    cur = self.conn.cursor()
+
+    cur.execute("select id, currency from accounts where name = ?", (account,))
+    row = cur.fetchone()
+    if row is None:
+        raise ValueError(f"Account '{account}' not found")
+    account_id = row[0]
+    currency = row[1]
+
+    if group_by == "month":
+        period_expr = "date / 100"
+    elif group_by == "year":
+        period_expr = "date / 10000"
+    else:
+        period_expr = "date"
+
+    conditions = ["account_id = ?", "date >= ?", "date <= ?"]
+    values = [account_id, from_date, to_date]
+
+    if category:
+        cur.execute("""
+            with recursive subcats(id) as (
+                select id from categories where name = ?
+                union
+                select c.id from categories c join subcats s on c.parent_id = s.id
+            )
+            select id from subcats
+        """, (category,))
+        cat_ids = [r[0] for r in cur.fetchall()]
+        if not cat_ids:
+            raise ValueError(f"Category '{category}' not found")
+        conditions.append(f"category_id in ({','.join('?' * len(cat_ids))})")
+        values.extend(cat_ids)
+
+    where = " and ".join(conditions)
+    rows = cur.execute(
+        f"select {period_expr}, sum(amount) from purchases where {where} group by {period_expr} order by {period_expr}",
+        values,
+    ).fetchall()
+
+    self.logger.info(f"Trends retrieved for account {account!r}")
+
+    return {"rows": rows, "currency": currency}
+
 
 def general(self, from_date: int, to_date: int, account: str) -> dict:
     cur = self.conn.cursor()

@@ -1,5 +1,8 @@
+import calendar as _calendar
 from dataclasses import dataclass
 from datetime import date
+
+_MONTH_ABBR = {i: _calendar.month_abbr[i] for i in range(1, 13)}
 
 
 @dataclass
@@ -33,6 +36,24 @@ def _int_to_date_str(n: int) -> str:
 
 def _int_to_month_str(n: int) -> str:
     return f"{n // 100:04d}-{n % 100:02d}"
+
+
+def trends(self, from_date: date, to_date: date, account: str, group_by: str, category: str | None):
+    raw = self.store.trends_stats(_date_to_int(from_date), _date_to_int(to_date), account, group_by, category)
+    currency = raw["currency"]
+
+    result = []
+    for period_key, amount_cents in raw["rows"]:
+        amount = round(amount_cents / 100, 2)
+        if group_by == "month":
+            label = f"{_MONTH_ABBR[period_key % 100]} {period_key // 100}"
+        elif group_by == "year":
+            label = str(period_key)
+        else:
+            label = _int_to_date_str(period_key)
+        result.append((label, amount))
+
+    return result, currency
 
 
 def _build_category_tree(rows, currency: str) -> list[dict]:
