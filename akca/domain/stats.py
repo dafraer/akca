@@ -19,7 +19,7 @@ class Stats:
     min_day: list[str, float]
     max_month: list[str, float]
     min_month: list[str, float]
-    categories: list[str, float]
+    categories: list[dict]
     currency: str
 
 
@@ -33,6 +33,33 @@ def _int_to_date_str(n: int) -> str:
 
 def _int_to_month_str(n: int) -> str:
     return f"{n // 100:04d}-{n % 100:02d}"
+
+
+def _build_category_tree(rows, currency: str) -> list[dict]:
+    # rows: (id, parent_id, name, direct_cents)
+    nodes = {row[0]: {"id": row[0], "parent_id": row[1], "name": row[2], "total": row[3]} for row in rows}
+
+    children: dict = {}
+    for nid, node in nodes.items():
+        children.setdefault(node["parent_id"], []).append(nid)
+
+    def accumulate(nid):
+        for child_id in children.get(nid, []):
+            accumulate(child_id)
+            nodes[nid]["total"] += nodes[child_id]["total"]
+
+    for nid, node in nodes.items():
+        if node["parent_id"] is None or node["parent_id"] not in nodes:
+            accumulate(nid)
+
+    return [
+        {
+            "id": n["id"],
+            "parent_id": n["parent_id"] if n["parent_id"] in nodes else None,
+            "name": f"{n['name']}  {round(n['total'] / 100, 2)} {currency}",
+        }
+        for n in nodes.values()
+    ]
 
 
 def general(self, from_date: date, to_date: date, account: str) -> Stats:
@@ -63,7 +90,7 @@ def general(self, from_date: date, to_date: date, account: str) -> Stats:
             return ["N/A", 0.0]
         return [_int_to_month_str(row[0]), round(row[1] / 100, 2)]
 
-    categories = [[row[0], round(row[1] / 100, 2)] for row in raw["categories"]]
+    categories = _build_category_tree(raw["categories"], currency)
 
     return Stats(
         total=round(total, 2),

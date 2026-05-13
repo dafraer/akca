@@ -63,13 +63,26 @@ def general(self, from_date: int, to_date: int, account: str) -> dict:
     ).fetchone()
 
     categories = cur.execute(
-        """select c.name, sum(p.amount)
-           from purchases p
-           join categories c on p.category_id = c.id
-           where p.account_id = ? and p.date >= ? and p.date <= ?
-           group by c.id, c.name
-           order by sum(p.amount) desc""",
-        (account_id, from_date, to_date),
+        """with recursive
+               relevant(id) as (
+                   select distinct category_id
+                   from purchases
+                   where account_id = ? and date >= ? and date <= ?
+               ),
+               ancestors(id) as (
+                   select id from relevant
+                   union
+                   select c.parent_id
+                   from categories c join ancestors a on c.id = a.id
+                   where c.parent_id is not null
+               )
+           select c.id, c.parent_id, c.name, coalesce(sum(p.amount), 0)
+           from categories c
+           join ancestors anc on c.id = anc.id
+           left join purchases p on p.category_id = c.id
+               and p.account_id = ? and p.date >= ? and p.date <= ?
+           group by c.id, c.parent_id, c.name""",
+        (account_id, from_date, to_date, account_id, from_date, to_date),
     ).fetchall()
 
     self.logger.info(f"Stats retrieved for account {account!r}")

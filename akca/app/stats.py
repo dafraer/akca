@@ -3,7 +3,7 @@ from datetime import date, datetime
 import click
 
 from akca.domain.stats import Stats
-from akca.app.helpers import format_table
+from akca.app.helpers import format_table, format_tree
 
 FROM_DATE = date(2001, 1, 1)
 TODAY = date.today()
@@ -73,6 +73,5 @@ def general(ctx, from_date: datetime, to_date: datetime, account: str, period: s
     ]
     res = format_table(header, rows)
     res += "\nSpending by category:\n"
-    headers = ["Name", f"Amount ({data.currency})"]
-    res += format_table(headers, data.categories)
+    res += format_tree(data.categories)
     click.echo(res)
