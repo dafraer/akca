@@ -47,7 +47,7 @@ class Store:
                             amount integer not null,
                             item_name text not null,
                             description text,
-                            purchased_at integer,
+                            date integer,
                             category_id integer not null,
                             account_id integer not null,
                             foreign key (category_id) references categories(id),
@@ -59,7 +59,7 @@ class Store:
 
         cur.execute("create index if not exists idx_purchases_account_id on purchases(account_id);")
         cur.execute("create index if not exists idx_purchases_category_id on purchases(category_id);")
-        cur.execute("create index if not exists idx_purchases_purchased_at on purchases(purchased_at);")
+        cur.execute("create index if not exists idx_purchases_date on purchases(date);")
         cur.execute("create index if not exists idx_categories_parent_id on categories(parent_id);")
         cur.execute("create index if not exists idx_categories_name on categories(name);")
 

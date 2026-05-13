@@ -1,7 +1,10 @@
-from datetime import datetime
-
+from datetime import date
 
 from akca.domain.purchase import CreatePurchaseParams, EditPurchaseParams, ListPurchasesParams
+
+
+def _date_to_int(d: date) -> int:
+    return d.year * 10000 + d.month * 100 + d.day
 
 
 def create(self, params: CreatePurchaseParams) -> int:
@@ -19,11 +22,9 @@ def create(self, params: CreatePurchaseParams) -> int:
         raise ValueError(f"Account '{params.account}' not found")
     account_id = row[0]
 
-    purchased_at = int(params.time.timestamp())
-
     cur.execute(
-        "insert into purchases (amount, item_name, description, purchased_at, category_id, account_id) values (?, ?, ?, ?, ?, ?)",
-        (params.amount, params.name, params.desc, purchased_at, category_id, account_id),
+        "insert into purchases (amount, item_name, description, date, category_id, account_id) values (?, ?, ?, ?, ?, ?)",
+        (params.amount, params.name, params.desc, _date_to_int(params.date), category_id, account_id),
     )
     self.conn.commit()
 
@@ -32,6 +33,7 @@ def create(self, params: CreatePurchaseParams) -> int:
     self.logger.info(f"Purchase created: {id_=}, name={params.name!r}, amount={params.amount}, account={params.account!r}, category={params.category!r}")
 
     return id_
+
 
 def edit(self, params: EditPurchaseParams):
     cur = self.conn.cursor()
@@ -51,10 +53,9 @@ def edit(self, params: EditPurchaseParams):
         updates.append("description = ?")
         values.append(params.description)
 
-    if params.time is not None:
-        updates.append("purchased_at = ?")
-        values.append(int(params.time.timestamp()))
-
+    if params.date is not None:
+        updates.append("date = ?")
+        values.append(_date_to_int(params.date))
 
     if params.category is not None:
         cur.execute("select id from categories where name = ?", (params.category,))
@@ -83,6 +84,7 @@ def edit(self, params: EditPurchaseParams):
 
     self.logger.info(f"Purchase updated: {params.id=}")
 
+
 def delete(self, id_: int):
     cur = self.conn.cursor()
     cur.execute("delete from purchases where id = ?", (id_,))
@@ -102,14 +104,12 @@ def list_(self, params: ListPurchasesParams) -> list:
         values.append(f"%{params.name}%")
 
     if params.from_date is not None:
-        from_ts = int(params.from_date.timestamp())
-        conditions.append("purchased_at >= ?")
-        values.append(from_ts)
+        conditions.append("date >= ?")
+        values.append(_date_to_int(params.from_date))
 
     if params.to_date is not None:
-        to_dt = params.to_date.replace(hour=23, minute=59, second=59)
-        conditions.append("purchased_at <= ?")
-        values.append(int(to_dt.timestamp()))
+        conditions.append("date <= ?")
+        values.append(_date_to_int(params.to_date))
 
     if params.category is not None:
         cur.execute("select id from categories where name = ?", (params.category,))
@@ -120,17 +120,17 @@ def list_(self, params: ListPurchasesParams) -> list:
         values.append(row[0])
 
     sort_map = {
-        "time": "purchased_at desc",
+        "date": "date desc",
         "amount": "amount desc",
         "alphabet": "item_name asc",
     }
-    order_by = sort_map.get(params.sort, "purchased_at desc")
+    order_by = sort_map.get(params.sort, "date desc")
 
     where = f"where {' and '.join(conditions)}" if conditions else ""
 
     values.append(params.limit)
     rows = cur.execute(
-        f"select id, amount, item_name, description, purchased_at, category_id, account_id from purchases {where} order by {order_by} limit ?",
+        f"select id, amount, item_name, description, date, category_id, account_id from purchases {where} order by {order_by} limit ?",
         values,
     ).fetchall()
 

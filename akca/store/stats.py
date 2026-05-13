@@ -1,7 +1,4 @@
-from datetime import datetime
-
-
-def stats(self, f_ts: int, t_ts: int, account: str) -> dict:
+def stats(self, from_date: int, to_date: int, account: str) -> dict:
     cur = self.conn.cursor()
 
     cur.execute("select id, currency from accounts where name = ?", (account,))
@@ -12,66 +9,66 @@ def stats(self, f_ts: int, t_ts: int, account: str) -> dict:
     currency = row[1]
 
     row = cur.execute(
-        "select coalesce(sum(amount), 0), count(*) from purchases where account_id = ? and purchased_at >= ? and purchased_at <= ?",
-        (account_id, f_ts, t_ts),
+        "select coalesce(sum(amount), 0), count(*) from purchases where account_id = ? and date >= ? and date <= ?",
+        (account_id, from_date, to_date),
     ).fetchone()
     total_cents = row[0]
     count = row[1]
 
     largest = cur.execute(
-        "select item_name, amount from purchases where account_id = ? and purchased_at >= ? and purchased_at <= ? order by amount desc limit 1",
-        (account_id, f_ts, t_ts),
+        "select item_name, amount from purchases where account_id = ? and date >= ? and date <= ? order by amount desc limit 1",
+        (account_id, from_date, to_date),
     ).fetchone()
 
     smallest = cur.execute(
-        "select item_name, amount from purchases where account_id = ? and purchased_at >= ? and purchased_at <= ? order by amount asc limit 1",
-        (account_id, f_ts, t_ts),
+        "select item_name, amount from purchases where account_id = ? and date >= ? and date <= ? order by amount asc limit 1",
+        (account_id, from_date, to_date),
     ).fetchone()
 
     max_day = cur.execute(
-        """select date(purchased_at, 'unixepoch', 'localtime'), sum(amount)
+        """select date, sum(amount)
            from purchases
-           where account_id = ? and purchased_at >= ? and purchased_at <= ?
-           group by date(purchased_at, 'unixepoch', 'localtime')
+           where account_id = ? and date >= ? and date <= ?
+           group by date 
            order by sum(amount) desc limit 1""",
-        (account_id, f_ts, t_ts),
+        (account_id, from_date, to_date),
     ).fetchone()
 
     min_day = cur.execute(
-        """select date(purchased_at, 'unixepoch', 'localtime'), sum(amount)
+        """select date, sum(amount)
            from purchases
-           where account_id = ? and purchased_at >= ? and purchased_at <= ?
-           group by date(purchased_at, 'unixepoch', 'localtime')
+           where account_id = ? and date >= ? and date <= ?
+           group by date 
            order by sum(amount) asc limit 1""",
-        (account_id, f_ts, t_ts),
+        (account_id, from_date, to_date),
     ).fetchone()
 
     max_month = cur.execute(
-        """select strftime('%Y-%m', purchased_at, 'unixepoch', 'localtime'), sum(amount)
+        """select date / 100, sum(amount)
            from purchases
-           where account_id = ? and purchased_at >= ? and purchased_at <= ?
-           group by strftime('%Y-%m', purchased_at, 'unixepoch', 'localtime')
+           where account_id = ? and date >= ? and date <= ?
+           group by date / 100
            order by sum(amount) desc limit 1""",
-        (account_id, f_ts, t_ts),
+        (account_id, from_date, to_date),
     ).fetchone()
 
     min_month = cur.execute(
-        """select strftime('%Y-%m', purchased_at, 'unixepoch', 'localtime'), sum(amount)
+        """select date / 100, sum(amount)
            from purchases
-           where account_id = ? and purchased_at >= ? and purchased_at <= ?
-           group by strftime('%Y-%m', purchased_at, 'unixepoch', 'localtime')
+           where account_id = ? and date >= ? and date <= ?
+           group by date / 100
            order by sum(amount) asc limit 1""",
-        (account_id, f_ts, t_ts),
+        (account_id, from_date, to_date),
     ).fetchone()
 
     categories = cur.execute(
         """select c.name, sum(p.amount)
            from purchases p
            join categories c on p.category_id = c.id
-           where p.account_id = ? and p.purchased_at >= ? and p.purchased_at <= ?
+           where p.account_id = ? and p.date >= ? and p.date <= ?
            group by c.id, c.name
            order by sum(p.amount) desc""",
-        (account_id, f_ts, t_ts),
+        (account_id, from_date, to_date),
     ).fetchall()
 
     self.logger.info(f"Stats retrieved for account {account!r}")

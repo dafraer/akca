@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime
 
 from dataclasses import dataclass
 
@@ -9,13 +9,12 @@ class CreatePurchaseParams:
     amount: float | int
     desc: str
     category: str
-    time: datetime 
+    date: date
     account: str
 
 
 def create(self, params: CreatePurchaseParams) -> int:
-    #convert amount to cents
-    params.amount = int(params.amount*100)
+    params.amount = int(params.amount * 100)
     return self.store.create_purchase(params)
 
 
@@ -26,7 +25,7 @@ class EditPurchaseParams:
     amount: float | int
     description: str
     category: str
-    time: datetime 
+    date: date
     account: str
 
 
@@ -42,19 +41,16 @@ def delete(self, id_: int):
 
 @dataclass
 class ListPurchasesParams:
-    name: str 
-    from_date: datetime 
-    to_date: datetime 
-    category: str 
-    sort: str 
+    name: str
+    from_date: date
+    to_date: date
+    category: str
+    sort: str
     limit: int
-
 
 def list_(self, params: ListPurchasesParams) -> list:
     purchases = self.store.list_purchases(params)
     for purchase in purchases:
-        amount_ind = 1
-        purchased_at_id=4
-        purchase[amount_ind] = round(purchase[amount_ind]/100, 2)
-        purchase[purchased_at_id] = datetime.fromtimestamp(purchase[purchased_at_id]).strftime("%Y-%m-%d %H:%M")
+        purchase[1] = round(purchase[1] / 100, 2)
+        purchase[4] =  str(datetime.strptime(str(purchase[4]), '%Y%m%d').date())
     return purchases
