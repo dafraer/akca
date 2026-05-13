@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import click
 
@@ -9,14 +9,27 @@ FROM_DATE = date(2001, 1, 1)
 TODAY = date.today()
 DATE_FORMATS = ["%Y-%m-%d", "%Y%m%d"]
 
+@click.group
+def stats():
+    pass
 
-@click.command
+@stats.command
+@click.option("-gb", "--group_by", type=click.Choice(["month", "day", "year"]), default="month")
+@click.option("-c", "--category", type=str)
+@click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
+@click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
+@click.option("-acc", "--account", required=True)
+@click.pass_context
+def trends(group_by: str, category: str, account: str, from_date: datetime, to_date: datetime):
+    pass 
+
+@stats.command
 @click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
 @click.option("-p", "--period", type=click.Choice(["month", "year"]), default=None)
 @click.option("-acc", "--account", type=str, required=True)
 @click.pass_context
-def stats(ctx, from_date, to_date, account: str, period: str):
+def general(ctx, from_date: datetime, to_date: datetime, account: str, period: str):
     if period and (from_date or to_date):
         raise click.UsageError("Use either --period OR --from/--to, not both.")
     if period:
@@ -40,7 +53,7 @@ def stats(ctx, from_date, to_date, account: str, period: str):
         raise click.UsageError("to_date must be after from_date")
 
     try:
-        data: Stats = ctx.obj.stats(from_date, to_date, account)
+        data: Stats = ctx.obj.general_stats(from_date, to_date, account)
     except Exception as e:
         ctx.obj.logger.error(f"Error getting stats: {e}")
         raise SystemExit(1)

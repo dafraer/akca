@@ -23,4 +23,4 @@ class Service:
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete
     list_purchases = purchase.list_
-    stats = stats.stats
+    general_stats = stats.general

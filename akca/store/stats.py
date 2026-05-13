@@ -1,4 +1,5 @@
-def stats(self, from_date: int, to_date: int, account: str) -> dict:
+
+def general(self, from_date: int, to_date: int, account: str) -> dict:
     cur = self.conn.cursor()
 
     cur.execute("select id, currency from accounts where name = ?", (account,))

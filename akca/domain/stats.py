@@ -35,8 +35,8 @@ def _int_to_month_str(n: int) -> str:
     return f"{n // 100:04d}-{n % 100:02d}"
 
 
-def stats(self, from_date: date, to_date: date, account: str) -> Stats:
-    raw = self.store.stats(_date_to_int(from_date), _date_to_int(to_date), account)
+def general(self, from_date: date, to_date: date, account: str) -> Stats:
+    raw = self.store.general_stats(_date_to_int(from_date), _date_to_int(to_date), account)
 
     total = raw["total_cents"] / 100
     count = raw["count"]
