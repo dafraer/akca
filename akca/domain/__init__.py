@@ -20,6 +20,7 @@ class Service:
     category_tree = category.tree
     list_categories = category.list_
     create_merchant = merchant.create
+    delete_merchant = merchant.delete
     list_merchants = merchant.list_
     create_purchase = purchase.create
     edit_purchase = purchase.edit

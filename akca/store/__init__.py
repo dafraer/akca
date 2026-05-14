@@ -19,6 +19,7 @@ class Store:
         logger.info(f"Connected to {path}")
 
         cur = self.conn.cursor()
+        cur.execute("pragma foreign_keys = on;")
 
         cur.execute("""
                         create table if not exists accounts (
@@ -90,6 +91,7 @@ class Store:
     list_categories = category.list_
     check_category_cycle = category.check_cycle
     create_merchant = merchant.create
+    delete_merchant = merchant.delete
     list_merchants = merchant.list_
     create_purchase = purchase.create
     edit_purchase = purchase.edit

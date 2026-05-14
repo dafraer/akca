@@ -20,6 +20,18 @@ def new(ctx, name: str):
 
 
 @merchant.command
+@click.option("--id", type=click.IntRange(min=1), required=True)
+@click.pass_context
+def rm(ctx, id: int):
+    try:
+        ctx.obj.delete_merchant(id)
+    except Exception as e:
+        ctx.obj.logger.error(f"Error deleting merchant: {e}")
+        raise SystemExit(1)
+    click.echo(f"Merchant has been deleted successfully")
+
+
+@merchant.command
 @click.option("--limit", type=click.IntRange(min=1, max=ROWS_LIMIT), default=ROWS_LIMIT)
 @click.option("--order_by",
               type=click.Choice(["id", "name"], case_sensitive=True),

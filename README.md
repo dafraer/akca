@@ -69,7 +69,7 @@ Akca stores its database at `~/.local/share/akca/akca.db` and creates it automat
 
 - 🏦 **Multiple accounts** — track different budgets (personal, business, etc.) each with their own currency
 - 🗂 **Nested categories** — organize spending into a tree of categories and subcategories of any depth
-- 🏪 **Merchant tracking** — tag purchases with a store or merchant and filter by it anywhere
+- 🏪 **Merchant tracking** — manage merchants as a first-class list and tag every purchase with one, so spelling stays consistent and filtering is exact
 - 🧾 **Purchase log** — add, edit, delete, and list purchases with filtering by name, category, merchant, and date range
 - 📊 **General stats** — total spend, purchase count, averages, largest/smallest purchase, most/least expensive day and month, top merchant, and spending breakdown as a category tree that rolls up subcategory totals
 - 📈 **Trends** — bar-chart view of spending grouped by day, month, or year, filterable by category and merchant
@@ -100,14 +100,32 @@ akca category new -n "fast-food" -p "restaurants"
 akca category tree
 ```
 
+### Merchants
+
+Merchants are managed as their own list and must be created before they can be attached to a purchase. This prevents typo duplicates (`Aldi` vs `aldi` vs `Aldii`) and makes filtering exact.
+
+```sh
+akca merchant new --name "Aldi"
+akca merchant new --name "Whole Foods"
+
+# List merchants (sorted by id or name)
+akca merchant ls
+akca merchant ls --order_by name
+
+# Remove a merchant (only if no purchases still reference it)
+akca merchant rm --id 1
+```
+
 ### Purchases
+
+Every purchase requires an account, a category, and a merchant — all referenced by name.
 
 ```sh
 # Add a purchase (date defaults to today)
 akca purchase new -n "Weekly shop" -a 54.30 -c "groceries" -acc "personal" -m "Aldi"
 
-# Add with an explicit date, no merchant
-akca purchase new -n "Uber" -a 12.50 -c "rideshare" -acc "personal" -d 2026-05-01
+# Add with an explicit date
+akca purchase new -n "Uber" -a 12.50 -c "rideshare" -acc "personal" -m "Uber" -d 2026-05-01
 
 # List recent purchases
 akca purchase ls
