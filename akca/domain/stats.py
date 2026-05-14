@@ -91,7 +91,7 @@ def general(self, from_date: date, to_date: date, account: str) -> Stats:
     count = raw["count"]
     currency = raw["currency"]
 
-    days = max((to_date - from_date).days, 1)
+    days = max((to_date - from_date).days + 1, 1)
     months = max(days / 30, 1)
 
     avg_daily = round(total / days, 2)
