@@ -1,7 +1,7 @@
 import logging
 
 from akca.store import Store 
-from akca.domain import account, backup, category, purchase, stats
+from akca.domain import account, backup, category, merchant, purchase, stats
 
 
 class Service:
@@ -19,6 +19,8 @@ class Service:
     delete_category = category.delete
     category_tree = category.tree
     list_categories = category.list_
+    create_merchant = merchant.create
+    list_merchants = merchant.list_
     create_purchase = purchase.create
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete

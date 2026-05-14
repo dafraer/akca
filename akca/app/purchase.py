@@ -20,7 +20,7 @@ def purchase():
 @click.option("-a", "--amount", type=float, required=True)
 @click.option("-d", "--date", "date_", type=click.DateTime(formats=DATE_FORMATS), default=TODAY)
 @click.option("-desc", "--desc", type=str)
-@click.option("-m", "--merchant", type=str, default=None)
+@click.option("-m", "--merchant", type=str, required=True)
 @click.option("-c", "--category", type=str, required=True)
 @click.option("-acc", "--account", type=str, required=True)
 @click.pass_context
@@ -83,4 +83,4 @@ def ls(ctx, name: str, from_date, to_date, merchant: str, category: str, sort: s
     except Exception as e:
         ctx.obj.logger.error(f"Error listing purchases: {e}")
         raise SystemExit(1)
-    click.echo(format_table(["id", "amount", "item_name", "description", "merchant", "date", "category_id", "account_id"], purchases))
+    click.echo(format_table(["id", "amount", "item_name", "description", "merchant_id", "date", "category_id", "account_id"], purchases))

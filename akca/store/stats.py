@@ -34,8 +34,12 @@ def trends(self, from_date: int, to_date: int, account: str, group_by: str, cate
         values.extend(cat_ids)
 
     if merchant:
-        conditions.append("merchant = ?")
-        values.append(merchant)
+        cur.execute("select id from merchants where name = ?", (merchant,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Merchant '{merchant}' not found")
+        conditions.append("merchant_id = ?")
+        values.append(row[0])
 
     where = " and ".join(conditions)
     rows = cur.execute(
@@ -112,11 +116,12 @@ def general(self, from_date: int, to_date: int, account: str) -> dict:
     ).fetchone()
 
     top_merchant = cur.execute(
-        """select merchant, sum(amount)
-           from purchases
-           where account_id = ? and date >= ? and date <= ? and merchant is not null
-           group by merchant
-           order by sum(amount) desc limit 1""",
+        """select m.name, sum(p.amount)
+           from purchases p
+           join merchants m on p.merchant_id = m.id
+           where p.account_id = ? and p.date >= ? and p.date <= ?
+           group by p.merchant_id
+           order by sum(p.amount) desc limit 1""",
         (account_id, from_date, to_date),
     ).fetchone()
 

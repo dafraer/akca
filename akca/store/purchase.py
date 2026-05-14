@@ -22,9 +22,17 @@ def create(self, params: CreatePurchaseParams) -> int:
         raise ValueError(f"Account '{params.account}' not found")
     account_id = row[0]
 
+    merchant_id = None
+
+    cur.execute("select id from merchants where name = ?", (params.merchant,))
+    row = cur.fetchone()
+    if row is None:
+        raise ValueError(f"Merchant '{params.merchant}' not found")
+    merchant_id = row[0]
+
     cur.execute(
-        "insert into purchases (amount, item_name, description, merchant, date, category_id, account_id) values (?, ?, ?, ?, ?, ?, ?)",
-        (params.amount, params.name, params.desc, params.merchant, _date_to_int(params.date), category_id, account_id),
+        "insert into purchases (amount, item_name, description, merchant_id, date, category_id, account_id) values (?, ?, ?, ?, ?, ?, ?)",
+        (params.amount, params.name, params.desc, merchant_id, _date_to_int(params.date), category_id, account_id),
     )
     self.conn.commit()
 
@@ -54,8 +62,12 @@ def edit(self, params: EditPurchaseParams):
         values.append(params.description)
 
     if params.merchant is not None:
-        updates.append("merchant = ?")
-        values.append(params.merchant)
+        cur.execute("select id from merchants where name = ?", (params.merchant,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Merchant '{params.merchant}' not found")
+        updates.append("merchant_id = ?")
+        values.append(row[0])
 
     if params.date is not None:
         updates.append("date = ?")
@@ -124,8 +136,12 @@ def list_(self, params: ListPurchasesParams) -> list:
         values.append(row[0])
 
     if params.merchant is not None:
-        conditions.append("merchant = ?")
-        values.append(params.merchant)
+        cur.execute("select id from merchants where name = ?", (params.merchant,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Merchant '{params.merchant}' not found")
+        conditions.append("merchant_id = ?")
+        values.append(row[0])
 
     sort_map = {
         "date": "date desc",
@@ -138,7 +154,7 @@ def list_(self, params: ListPurchasesParams) -> list:
 
     values.append(params.limit)
     rows = cur.execute(
-        f"select id, amount, item_name, description, merchant, date, category_id, account_id from purchases {where} order by {order_by} limit ?",
+        f"select id, amount, item_name, description, merchant_id, date, category_id, account_id from purchases {where} order by {order_by} limit ?",
         values,
     ).fetchall()
 

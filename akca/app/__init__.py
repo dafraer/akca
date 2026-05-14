@@ -3,8 +3,9 @@ import logging
 import click 
 
 from akca.app.account import account
-from akca.app.category import category 
-from akca.app.purchase import purchase 
+from akca.app.category import category
+from akca.app.merchant import merchant
+from akca.app.purchase import purchase
 from akca.app.backup import backup
 from akca.app.stats import stats
 from akca.store import Store
@@ -36,6 +37,7 @@ def cli(ctx, verbose):
 
 cli.add_command(account)
 cli.add_command(category)
+cli.add_command(merchant)
 cli.add_command(purchase)
 cli.add_command(backup)
 cli.add_command(stats)

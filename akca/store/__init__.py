@@ -2,7 +2,7 @@ import sqlite3
 import logging
 import os
 
-from akca.store import account, backup, category, purchase, stats
+from akca.store import account, backup, category, merchant, purchase, stats
 
 def store_path() -> str:
     base = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
@@ -42,17 +42,27 @@ class Store:
         logger.info("Initialized categories table")
 
         cur.execute("""
+                        create table if not exists merchants (
+                            id integer primary key autoincrement,
+                            name text not null unique
+                        );
+                    """)
+
+        logger.info("Initialized merchants table")
+
+        cur.execute("""
                         create table if not exists purchases (
                             id integer primary key autoincrement,
                             amount integer not null,
                             item_name text not null,
                             description text,
-                            merchant text,
-                            date integer,
+                            merchant_id integer not null,
+                            date integer not null,
                             category_id integer not null,
                             account_id integer not null,
                             foreign key (category_id) references categories(id),
-                            foreign key (account_id) references accounts(id)
+                            foreign key (account_id) references accounts(id),
+                            foreign key (merchant_id) references merchants(id)
                         );
                     """)
 
@@ -61,9 +71,10 @@ class Store:
         cur.execute("create index if not exists idx_purchases_account_id on purchases(account_id);")
         cur.execute("create index if not exists idx_purchases_category_id on purchases(category_id);")
         cur.execute("create index if not exists idx_purchases_date on purchases(date);")
-        cur.execute("create index if not exists idx_purchases_merchant on purchases(merchant);")
+        cur.execute("create index if not exists idx_purchases_merchant_id on purchases(merchant_id);")
         cur.execute("create index if not exists idx_categories_parent_id on categories(parent_id);")
         cur.execute("create index if not exists idx_categories_name on categories(name);")
+        cur.execute("create index if not exists idx_merchants_name on merchants(name);")
 
         logger.info("Initialized indexes")
 
@@ -78,6 +89,8 @@ class Store:
     category_tree = category.tree
     list_categories = category.list_
     check_category_cycle = category.check_cycle
+    create_merchant = merchant.create
+    list_merchants = merchant.list_
     create_purchase = purchase.create
     edit_purchase = purchase.edit
     delete_purchase = purchase.delete

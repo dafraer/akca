@@ -5,8 +5,8 @@ import click
 from akca.domain.stats import Stats
 from akca.app.helpers import format_table, format_tree
 
-FROM_DATE = date(2001, 1, 1)
-TODAY = date.today()
+FROM_DATE = datetime(2001, 1, 1)
+TODAY = datetime.combine(date.today(), datetime.min.time())
 DATE_FORMATS = ["%Y-%m-%d", "%Y%m%d"]
 
 @click.group
@@ -17,17 +17,13 @@ def stats():
 @click.option("-gb", "--group_by", type=click.Choice(["month", "day", "year"]), default="month")
 @click.option("-c", "--category", type=str, default=None)
 @click.option("-m", "--merchant", type=str, default=None)
-@click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
-@click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
+@click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=FROM_DATE)
+@click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=TODAY)
 @click.option("-acc", "--account", required=True)
 @click.pass_context
 def trends(ctx, group_by: str, category: str, merchant: str, account: str, from_date, to_date):
-    if from_date and to_date:
-        from_date = from_date.date()
-        to_date = to_date.date()
-    else:
-        from_date = FROM_DATE
-        to_date = TODAY
+    from_date = from_date.date()
+    to_date = to_date.date()
 
     if from_date > to_date:
         raise click.UsageError("to_date must be after from_date")
@@ -54,13 +50,16 @@ def trends(ctx, group_by: str, category: str, merchant: str, account: str, from_
     click.echo("\n".join(lines))
 
 @stats.command
-@click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
-@click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=None)
+@click.option("-from", "--from_date", type=click.DateTime(formats=DATE_FORMATS), default=FROM_DATE)
+@click.option("-to", "--to_date", type=click.DateTime(formats=DATE_FORMATS), default=TODAY)
 @click.option("-p", "--period", type=click.Choice(["month", "year"]), default=None)
 @click.option("-acc", "--account", type=str, required=True)
 @click.pass_context
 def general(ctx, from_date: datetime, to_date: datetime, account: str, period: str):
-    if period and (from_date or to_date):
+    # Defaults are now non-None, so check "did the user pass it?" via source.
+    from_explicit = ctx.get_parameter_source("from_date") != click.core.ParameterSource.DEFAULT
+    to_explicit = ctx.get_parameter_source("to_date") != click.core.ParameterSource.DEFAULT
+    if period and (from_explicit or to_explicit):
         raise click.UsageError("Use either --period OR --from/--to, not both.")
     if period:
         p1 = f"this {period}"
@@ -70,14 +69,10 @@ def general(ctx, from_date: datetime, to_date: datetime, account: str, period: s
         else:
             from_date = TODAY.replace(day=1, month=1)
             to_date = TODAY
-    elif from_date and to_date:
-        from_date = from_date.date()
-        to_date = to_date.date()
-        p1 = f"from {from_date} to {to_date}"
     else:
-        from_date = FROM_DATE
-        to_date = TODAY
-        p1 = "all time"
+        from_date = from_date.date()
+        to_date = to_date.date() 
+        p1 = f"from {from_date} to {to_date}"
 
     if from_date > to_date:
         raise click.UsageError("to_date must be after from_date")
