@@ -20,15 +20,15 @@ def new(ctx, name: str):
 
 
 @merchant.command
-@click.option("--id", type=click.IntRange(min=1), required=True)
+@click.option("--name", type=str, required=True)
 @click.pass_context
-def rm(ctx, id: int):
+def rm(ctx, name: str):
     try:
-        ctx.obj.delete_merchant(id)
+        ctx.obj.delete_merchant(name)
     except Exception as e:
         ctx.obj.logger.error(f"Error deleting merchant: {e}")
         raise SystemExit(1)
-    click.echo(f"Merchant has been deleted successfully")
+    click.echo(f"Merchant has been deleted successfully: {name=}")
 
 
 @merchant.command

@@ -10,14 +10,14 @@ def create(self, name: str) -> int:
     return id_
 
 
-def delete(self, id_: int):
+def delete(self, name: str):
     cur = self.conn.cursor()
-    cur.execute("delete from merchants where id=?;", (id_,))
+    cur.execute("delete from merchants where name = ?;", (name,))
     if cur.rowcount == 0:
-        raise ValueError(f"Merchant with id {id_} not found")
+        raise ValueError(f"Merchant named {name} not found")
     self.conn.commit()
 
-    self.logger.info(f"Merchant deleted: {id_}")
+    self.logger.info(f"Merchant deleted: {name=}")
 
 
 def list_(self, limit: int, order_by: str) -> list[tuple]:

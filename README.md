@@ -113,7 +113,7 @@ akca merchant ls
 akca merchant ls --order_by name
 
 # Remove a merchant (only if no purchases still reference it)
-akca merchant rm --id 1
+akca merchant rm --name "Aldi"
 ```
 
 ### Purchases
